@@ -28,7 +28,7 @@ public interface DayOffCommandService  {
 
     ResponseEntity<Long> updateDayOff (Long dayOffId,String processStatus) ;
 
-    ResponseEntity<DayOffDTO> getDayOff (Long dayOffId) throws DayOffException;
+    ResponseEntity<DayOffDTO> getDayOff (Long dayOffId);
 
     ResponseEntity<DayOffListResponse> getDayOffsByEmployeeId (String employeeId) ;
 

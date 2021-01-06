@@ -100,21 +100,22 @@ public class DayOffCommandServiceImpl implements DayOffCommandService {
 
     }
 
-    public ResponseEntity<DayOffDTO> getDayOff (Long id) throws DayOffException {
+    public ResponseEntity<DayOffDTO> getDayOff (Long id) {
 
-        DayOff dayoff = dayOffRepository.getOne(id) ;
-
-        if(dayoff == null){
+        try {
+            DayOff dayoff = dayOffRepository.getOne(id);
+            DayOffDTO dayOffDTO = new DayOffDTO();
+            dayOffDTO.setId(dayoff.getId());
+            dayOffDTO.setEmployeeID(dayoff.getEmployeeID());
+            dayOffDTO.setDayOffDateRange(dayoff.getDayOffDateRange());
+            dayOffDTO.setDayOffDateCount(dayoff.getDayOffDateCount());
+            dayOffDTO.setProcessStatus(dayoff.getProcessStatus());
+            return new ResponseEntity<DayOffDTO>(dayOffDTO, HttpStatus.OK) ;
+        }
+        catch (Exception e){
             throw new RecordNotFoundException("Not found : " + id) ;
         }
 
-        DayOffDTO dayOffDTO = new DayOffDTO();
-        dayOffDTO.setId(dayoff.getId());
-        dayOffDTO.setEmployeeID(dayoff.getEmployeeID());
-        dayOffDTO.setDayOffDateRange(dayoff.getDayOffDateRange());
-        dayOffDTO.setDayOffDateCount(dayoff.getDayOffDateCount());
-        dayOffDTO.setProcessStatus(dayoff.getProcessStatus());
-        return new ResponseEntity<DayOffDTO>(dayOffDTO, HttpStatus.OK) ;
     }
 
     public ResponseEntity<DayOffListResponse> getDayOffsByEmployeeId (String employeeId) {
@@ -168,7 +169,7 @@ public class DayOffCommandServiceImpl implements DayOffCommandService {
 
 
 
-    public DayOffResult dayOffCreateControl(String dayOffDateRange){
+    private DayOffResult dayOffCreateControl(String dayOffDateRange){
 
         StringBuilder strBuild = new StringBuilder();
         int dayOffCount = 0 ;
@@ -190,7 +191,7 @@ public class DayOffCommandServiceImpl implements DayOffCommandService {
         return new DayOffResult(strBuild.toString(),dayOffCount) ;
     }
 
-    public boolean holidayControl(String dateOffDay){
+    private boolean holidayControl(String dateOffDay){
 
         List<Holidays> holidaysList = holidaysRepository.findAll();
 

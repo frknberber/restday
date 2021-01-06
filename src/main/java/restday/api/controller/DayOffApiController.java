@@ -30,8 +30,8 @@ public class DayOffApiController {
     @PostMapping(value = "/api/create/employeelist", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "Create employee list")
-    public ResponseEntity<Long> createEmployeeList(@RequestBody CreateEmployeeListRequest createEmployeeListRequest)
-    {
+    public ResponseEntity<Long> createEmployeeList(@RequestBody CreateEmployeeListRequest createEmployeeListRequest) {
+
         return dayOffCommandService.createEmployeeList(createEmployeeListRequest.getEmployeeDTOList());
     }
 
@@ -39,6 +39,7 @@ public class DayOffApiController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "Create holidays")
     public ResponseEntity<Long> createHolidays(@RequestBody CreateHolidayRequest createHolidayRequest) {
+
         return dayOffCommandService.createHoliday(createHolidayRequest.getHolidayDTOList());
     }
 
@@ -47,31 +48,34 @@ public class DayOffApiController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "Create day off")
     public ResponseEntity<Long> createDayOff(@RequestBody CreateDayOffRequest createDayOffRequest) {
-        return dayOffCommandService.createDayOff(createDayOffRequest);
 
+        return dayOffCommandService.createDayOff(createDayOffRequest);
     }
 
     @PutMapping(value = "/api/update/dayoff", consumes = MediaType.ALL_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "Update day off")
     public ResponseEntity<Long> updateDayOff(@RequestParam(required = true) Long dayOffId , String processStatus) {
-        return dayOffCommandService.updateDayOff(dayOffId,processStatus);
 
+        return dayOffCommandService.updateDayOff(dayOffId,processStatus);
     }
 
     @GetMapping(value = "/api/get/dayoff", consumes = MediaType.ALL_VALUE)
+    @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "Get day offs")
     public ResponseEntity<DayOffDTO> getDayOff(@RequestParam(required = true) Long dayOffId) {
 
         return dayOffCommandService.getDayOff(dayOffId);
     }
 
+
+
     @GetMapping(value = "/api/get/dayoffs", consumes = MediaType.ALL_VALUE , produces = "application/json; charset=UTF-8")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "", notes = "Get day offs")
     public ResponseEntity<DayOffListResponse> getDayOffsByEmployeeId(@RequestParam(required = true) String employeeId) {
-        return dayOffCommandService.getDayOffsByEmployeeId(employeeId);
 
+        return dayOffCommandService.getDayOffsByEmployeeId(employeeId);
     }
 
 
