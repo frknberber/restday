@@ -2,53 +2,43 @@ package restday.api.handler;
 
 import restday.RestdayApplication;
 
-public class DayOffValidationRule {
+public enum DayOffValidationRule {
 
-    /*DAY_OFF_CREATE_SUCCESS("İzin girişi oluşturulmuştur."),
-    DAY_OFF_UPDATE_SUCCESS("İzin güncellemesi oluşturulmuştur."),
-    DAY_OFF_NOT_ENOUGH_REMAINING_DAY("Yeterli izin günü bulunmamaktadır."),
-    REQUEST_CAN_NOT_BE_EMPTY("İnput bilgileri boş olamaz."),
-    RECORD_NOT_FOUND("Kayıt bulunamadı");*/
+    DAY_OFF_NOT_ENOUGH_REMAINING_DAY,
+    REQUEST_CAN_NOT_BE_EMPTY,
+    RECORD_NOT_FOUND ;
 
-    public static String DAY_OFF_NOT_ENOUGH_REMAINING_DAY ;
-    public static String RECORD_NOT_FOUND ;
-    public static String REQUEST_CAN_NOT_BE_EMPTY ;
 
-    //private final String description;
-    private final String language ;
+    public static String getRule(DayOffValidationRule value) {
 
-    public DayOffValidationRule() {
-        this.language = RestdayApplication.language ;
-        configureLanguage();
-
+        if(RestdayApplication.language.equals("tr")){
+            switch (value) {
+                case RECORD_NOT_FOUND:
+                    return "Kayıt bulunamamıştır.";
+                case REQUEST_CAN_NOT_BE_EMPTY:
+                    return "İstek bilgileri boş olamaz.";
+                case DAY_OFF_NOT_ENOUGH_REMAINING_DAY:
+                    return "Yeterli izin günü bulunmamaktadır.";
+                default:
+                    return "0xffffff00";
+            }
+        }
+        else{
+            switch (value) {
+                case RECORD_NOT_FOUND:
+                    return "Record not found";
+                case REQUEST_CAN_NOT_BE_EMPTY:
+                    return "Request can not be empty";
+                case DAY_OFF_NOT_ENOUGH_REMAINING_DAY:
+                    return "Not enough remaining day";
+                default:
+                    return "0xffffff00";
+            }
+        }
     }
 
-    private DayOffValidationRule(String description) {
-        this.language = RestdayApplication.language ;
-        //this.description = description;
-        configureLanguage();
+     DayOffValidationRule() {
 
-    }
-
-    private void configureLanguage(){
-        System.out.println("lananalnallna--- " + this.language);
-        if(this.language.equals("tr")==true)
-            setTR();
-        else
-            setEN();
-
-    }
-
-    private void setTR(){
-        DAY_OFF_NOT_ENOUGH_REMAINING_DAY = "Yeterli izin günü bulunmamaktadır." ;
-        RECORD_NOT_FOUND = "Kayıt bulunamadı";
-        REQUEST_CAN_NOT_BE_EMPTY ="İnput bilgileri boş olamaz."  ;
-    }
-
-    private void setEN(){
-        DAY_OFF_NOT_ENOUGH_REMAINING_DAY = "setENsetENsetEN" ;
-        RECORD_NOT_FOUND = "setENsetENsetEN";
-        REQUEST_CAN_NOT_BE_EMPTY ="setENsetENsetEN"  ;
     }
 
 }

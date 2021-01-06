@@ -10,14 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 import restday.api.handler.DayOffValidationRule;
 import restday.api.request.*;
 import restday.api.response.DayOffListResponse;
-import restday.api.response.DayOffResponse;
 import restday.domain.DayOff;
 import restday.domain.Employee;
 import restday.domain.Holidays;
 import restday.dto.DayOffDTO;
 import restday.dto.EmployeeDTO;
 import restday.dto.HolidayDTO;
-import restday.exception.DayOffException;
 import restday.exception.RecordNotFoundException;
 import restday.repository.DayOffRepository;
 import restday.repository.EmployeeRepository;
@@ -61,7 +59,7 @@ public class DayOffCommandServiceImpl implements DayOffCommandService {
             if( (employee.getRemainingDayOff() - daysAndCount.getDatesCount() < 0) ||
                     (workingYear==0 && employee.getRemainingDayOff() - daysAndCount.getDatesCount() < -5)){
 
-                throw new RecordNotFoundException("Not found : " + request.getEmployeeId()) ;
+                throw new RecordNotFoundException(DayOffValidationRule.getRule(DayOffValidationRule.DAY_OFF_NOT_ENOUGH_REMAINING_DAY) + " : " + request.getEmployeeId()) ;
             }
             else{
                 DayOff dayOff = new DayOff();
@@ -75,7 +73,7 @@ public class DayOffCommandServiceImpl implements DayOffCommandService {
             }
 
         }catch (Exception e){
-            throw new RecordNotFoundException("Not found : " + request.getEmployeeId()) ;
+            throw new RecordNotFoundException(DayOffValidationRule.getRule(DayOffValidationRule.RECORD_NOT_FOUND) + " : " + request.getEmployeeId()) ;
         }
 
     }
@@ -92,7 +90,7 @@ public class DayOffCommandServiceImpl implements DayOffCommandService {
             return new ResponseEntity<Long>(1L, HttpStatus.OK) ;
         }
         catch (Exception e){
-            throw new RecordNotFoundException("Not found : " + dayOffId) ;
+            throw new RecordNotFoundException(DayOffValidationRule.getRule(DayOffValidationRule.RECORD_NOT_FOUND) + " : " + dayOffId) ;
         }
 
     }
@@ -110,7 +108,7 @@ public class DayOffCommandServiceImpl implements DayOffCommandService {
             return new ResponseEntity<DayOffDTO>(dayOffDTO, HttpStatus.OK) ;
         }
         catch (Exception e){
-            throw new RecordNotFoundException("Not found : " + id) ;
+            throw new RecordNotFoundException(DayOffValidationRule.getRule(DayOffValidationRule.RECORD_NOT_FOUND) + " : " + id) ;
         }
 
     }
@@ -124,7 +122,7 @@ public class DayOffCommandServiceImpl implements DayOffCommandService {
             return new ResponseEntity<DayOffListResponse>(response, HttpStatus.OK) ;
         }
         catch (Exception e){
-            throw new RecordNotFoundException("Not found : " + employeeId) ;
+            throw new RecordNotFoundException(DayOffValidationRule.getRule(DayOffValidationRule.RECORD_NOT_FOUND) + " : " + employeeId) ;
         }
 
     }
@@ -132,7 +130,7 @@ public class DayOffCommandServiceImpl implements DayOffCommandService {
     public ResponseEntity<Long> createHoliday(List<HolidayDTO> holidayDTOList){
 
         if(holidayDTOList == null || holidayDTOList.size()==0){
-            throw new RecordNotFoundException("Not found : ") ;
+            throw new RecordNotFoundException(DayOffValidationRule.getRule(DayOffValidationRule.REQUEST_CAN_NOT_BE_EMPTY)) ;
         }
         else{
             for (HolidayDTO item : holidayDTOList) {
@@ -150,7 +148,7 @@ public class DayOffCommandServiceImpl implements DayOffCommandService {
     public ResponseEntity<Long> createEmployeeList(List<EmployeeDTO> employeeDTOList) {
 
         if(employeeDTOList == null || employeeDTOList.size()==0){
-            throw new RecordNotFoundException("Not found : ") ;
+            throw new RecordNotFoundException(DayOffValidationRule.getRule(DayOffValidationRule.REQUEST_CAN_NOT_BE_EMPTY)) ;
         }
         else{
             for (EmployeeDTO item : employeeDTOList) {
