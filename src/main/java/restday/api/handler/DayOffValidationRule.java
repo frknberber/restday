@@ -6,6 +6,7 @@ public enum DayOffValidationRule {
 
     DAY_OFF_NOT_ENOUGH_REMAINING_DAY,
     REQUEST_CAN_NOT_BE_EMPTY,
+    FALSE_REQUEST_FIELDS,
     RECORD_NOT_FOUND ;
 
 
@@ -17,6 +18,8 @@ public enum DayOffValidationRule {
                     return "Kayıt bulunamamıştır.";
                 case REQUEST_CAN_NOT_BE_EMPTY:
                     return "İstek bilgileri boş olamaz.";
+                case FALSE_REQUEST_FIELDS:
+                    return "İstek bilgisi yanlıştır.";
                 case DAY_OFF_NOT_ENOUGH_REMAINING_DAY:
                     return "Yeterli izin günü bulunmamaktadır.";
                 default:
@@ -29,6 +32,8 @@ public enum DayOffValidationRule {
                     return "Record not found";
                 case REQUEST_CAN_NOT_BE_EMPTY:
                     return "Request can not be empty";
+                case FALSE_REQUEST_FIELDS:
+                    return "False request fields";
                 case DAY_OFF_NOT_ENOUGH_REMAINING_DAY:
                     return "Not enough remaining day";
                 default:

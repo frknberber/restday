@@ -48,11 +48,12 @@ public class DayOffCommandServiceImpl implements DayOffCommandService {
 
     public ResponseEntity<Long> createDayOff(CreateDayOffRequest request) {
 
+        if(request.getEmployeeId()==null || request.getDateRange().equals("")==true || request.getDateRange()==null || request.getDateRange().equals("")==true)
+            throw new RecordNotFoundException(DayOffValidationRule.getRule(DayOffValidationRule.FALSE_REQUEST_FIELDS)) ;
+
         try {
             Employee employee = employeeRepository.findEmployeeByEmployeeId(request.getEmployeeId());
             int workingYear = this.calculateYear(employee.getStartDateWork(),LocalDate.now().toString()) ;
-
-            holidayControl(request.getDateRange());
 
             DayOffResult daysAndCount = dayOffCreateControl(request.getDateRange());
 
@@ -80,6 +81,10 @@ public class DayOffCommandServiceImpl implements DayOffCommandService {
 
     public ResponseEntity<Long> updateDayOff (Long dayOffId,String processStatus){
 
+        if(processStatus==null || processStatus.equals(" ")==true){
+            throw new RecordNotFoundException(DayOffValidationRule.getRule(DayOffValidationRule.FALSE_REQUEST_FIELDS)) ;
+        }
+
         try {
             DayOff dayoff = dayOffRepository.getOne(dayOffId) ;
             dayoff.setProcessStatus(processStatus);
@@ -98,6 +103,7 @@ public class DayOffCommandServiceImpl implements DayOffCommandService {
     public ResponseEntity<DayOffDTO> getDayOff (Long id) {
 
         try {
+
             DayOff dayoff = dayOffRepository.getOne(id);
             DayOffDTO dayOffDTO = new DayOffDTO();
             dayOffDTO.setId(dayoff.getId());
@@ -180,14 +186,12 @@ public class DayOffCommandServiceImpl implements DayOffCommandService {
         for(int i=0 ; i<dateArr.length ; i++ ) {
             if(weekendControl(dateToDay(dateArr[i]))==false && holidayControl(dateArr[i])==false) {
                 strBuild.append(dateArr[i]);
-                System.out.println("strBuild.append : " + dateArr[i]);
                 dayOffCount++ ;
 
                 if(i!=dateArr.length-1){
                     strBuild.append("-");
                 }
             }
-
         }
 
         return new DayOffResult(strBuild.toString(),dayOffCount) ;
