@@ -50,12 +50,8 @@ public class DayOffCommandServiceImpl implements DayOffCommandService {
 
     public ResponseEntity<Long> createDayOff(CreateDayOffRequest request) {
 
-        Employee employee = employeeRepository.findEmployeeByEmployeeId(request.getEmployeeId());
-
-        if(employee !=null){
-            throw new RecordNotFoundException("Not found : " + request.getEmployeeId()) ;
-        }
-        else{
+        try {
+            Employee employee = employeeRepository.findEmployeeByEmployeeId(request.getEmployeeId());
             int workingYear = this.calculateYear(employee.getStartDateWork(),LocalDate.now().toString()) ;
 
             holidayControl(request.getDateRange());
@@ -75,28 +71,29 @@ public class DayOffCommandServiceImpl implements DayOffCommandService {
                 dayOff.setDayOffCreatedDate(LocalDate.now());
                 dayOff.setProcessStatus("Onay Bekleniyor");
                 dayOffRepository.save(dayOff);
+                return new ResponseEntity<Long>(1L, HttpStatus.OK) ;
             }
+
+        }catch (Exception e){
+            throw new RecordNotFoundException("Not found : " + request.getEmployeeId()) ;
         }
 
-        return new ResponseEntity<Long>(1L, HttpStatus.OK) ;
     }
 
     public ResponseEntity<Long> updateDayOff (Long dayOffId,String processStatus){
 
-        DayOff dayoff = dayOffRepository.getOne(dayOffId) ;
-
-        if(dayoff==null){
-            throw new RecordNotFoundException("Not found : " + dayOffId) ;
-        }
-
-        dayoff.setProcessStatus(processStatus);
-        if(processStatus.equals("Onaylandı")==true){
+        try {
+            DayOff dayoff = dayOffRepository.getOne(dayOffId) ;
+            dayoff.setProcessStatus(processStatus);
             Employee employee = employeeRepository.findEmployeeByEmployeeId(dayoff.getEmployeeID());
             employee.setRemainingDayOff(employee.getRemainingDayOff() - dayoff.getDayOffDateCount());
             employeeRepository.save(employee);
+            dayOffRepository.save(dayoff);
+            return new ResponseEntity<Long>(1L, HttpStatus.OK) ;
         }
-        dayOffRepository.save(dayoff);
-        return new ResponseEntity<Long>(1L, HttpStatus.OK) ;
+        catch (Exception e){
+            throw new RecordNotFoundException("Not found : " + dayOffId) ;
+        }
 
     }
 
@@ -120,15 +117,34 @@ public class DayOffCommandServiceImpl implements DayOffCommandService {
 
     public ResponseEntity<DayOffListResponse> getDayOffsByEmployeeId (String employeeId) {
 
-        DayOffListResponse response = new DayOffListResponse();
-
-        List<DayOff> dayOffList = dayOffRepository.findDayOffsByEmployeeID(employeeId);
-        if(dayOffList == null || dayOffList.size()==0){
+        try {
+            DayOffListResponse response = new DayOffListResponse();
+            List<DayOff> dayOffList = dayOffRepository.findDayOffsByEmployeeID(employeeId);
+            response.setList(dayOffList);
+            return new ResponseEntity<DayOffListResponse>(response, HttpStatus.OK) ;
+        }
+        catch (Exception e){
             throw new RecordNotFoundException("Not found : " + employeeId) ;
         }
 
-        response.setList(dayOffList);
-        return new ResponseEntity<DayOffListResponse>(response, HttpStatus.OK) ;
+    }
+
+    public ResponseEntity<Long> createHoliday(List<HolidayDTO> holidayDTOList){
+
+        if(holidayDTOList == null || holidayDTOList.size()==0){
+            throw new RecordNotFoundException("Not found : ") ;
+        }
+        else{
+            for (HolidayDTO item : holidayDTOList) {
+                Holidays holidays = new Holidays();
+                holidays.setHolidayName(item.getHolidayName());
+                holidays.setHolidayDateRange(item.getHolidayDateRange());
+                holidays.setHolidayYear(item.getHolidayYear());
+                holidaysRepository.save(holidays);
+
+            }
+            return new ResponseEntity<Long>(1L, HttpStatus.OK) ;
+        }
     }
 
     public ResponseEntity<Long> createEmployeeList(List<EmployeeDTO> employeeDTOList) {
@@ -136,11 +152,12 @@ public class DayOffCommandServiceImpl implements DayOffCommandService {
         if(employeeDTOList == null || employeeDTOList.size()==0){
             throw new RecordNotFoundException("Not found : ") ;
         }
-
-        for (EmployeeDTO item : employeeDTOList) {
-            createEmployee(item);
+        else{
+            for (EmployeeDTO item : employeeDTOList) {
+                createEmployee(item);
+            }
+            return new ResponseEntity<Long>(1L, HttpStatus.OK) ;
         }
-        return new ResponseEntity<Long>(1L, HttpStatus.OK) ;
     }
 
     public void createEmployee(EmployeeDTO employeeDTO){
@@ -152,19 +169,6 @@ public class DayOffCommandServiceImpl implements DayOffCommandService {
         int earnedDayOff = this.earnedDayOff(employeeDTO.getStartDateWork(),LocalDate.now().toString()) ;
         employee.setRemainingDayOff(earnedDayOff);
         employeeRepository.save(employee);
-    }
-
-    public ResponseEntity<Long> createHoliday(List<HolidayDTO> holidayDTOList){
-
-        for (HolidayDTO item : holidayDTOList) {
-            Holidays holidays = new Holidays();
-            holidays.setHolidayName(item.getHolidayName());
-            holidays.setHolidayDateRange(item.getHolidayDateRange());
-            holidays.setHolidayYear(item.getHolidayYear());
-            holidaysRepository.save(holidays);
-
-        }
-        return new ResponseEntity<Long>(1L, HttpStatus.OK) ;
     }
 
 
